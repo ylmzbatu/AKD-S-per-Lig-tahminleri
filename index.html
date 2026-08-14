@@ -182,11 +182,20 @@
   .week-pill:hover{border-color:var(--gold);color:var(--text);}
   .week-pill.active{background:var(--gold);border-color:var(--gold);color:var(--bg);}
 
+  .match-block{border-bottom:1px solid var(--line);}
+  .match-block:last-child{border-bottom:none;}
   .match{
     display:grid;grid-template-columns:1fr 40px 92px 40px 1fr;
-    align-items:center;gap:14px;padding:22px 4px;border-bottom:1px solid var(--line);
+    align-items:center;gap:14px;padding:22px 4px 6px;
   }
-  .match:last-child{border-bottom:none;}
+  .real-tag-row{display:flex;justify-content:center;padding-bottom:16px;}
+  .real-tag{
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:11.5px;
+    padding:4px 12px;border-radius:100px;letter-spacing:.02em;
+  }
+  .tag-exact{color:#3fb27f;background:rgba(63,178,127,0.15);border:1px solid rgba(63,178,127,0.45);}
+  .tag-outcome{color:#f0932b;background:rgba(240,147,43,0.15);border:1px solid rgba(240,147,43,0.45);}
+  .tag-wrong{color:#e0554f;background:rgba(224,85,79,0.15);border:1px solid rgba(224,85,79,0.45);}
   .name{font-weight:600;font-size:15.5px;}
   .name.home{text-align:right;}
   .name.away{text-align:left;}
@@ -564,20 +573,45 @@ async function renderFixtures(forceRefresh){
 
   const saved = await loadWeekScores(forceRefresh);
 
+  const finalized = cachedData.__FINALIZED__ && cachedData.__FINALIZED__[currentWeek];
+  const showRealScores = finalized && currentPlayer !== ADMIN_NAME;
+  const adminResults = (cachedData.__RESULTS__ && cachedData.__RESULTS__[currentWeek]) || {};
+
   root.innerHTML = matches.map((m, idx) => {
     const [home, away] = m;
     const s = saved[idx] || {};
+
+    let tagHtml = '';
+    if(showRealScores){
+      const actual = adminResults[idx];
+      if(actual && actual.home !== null && actual.away !== null && actual.home !== undefined){
+        let cls = 'tag-wrong';
+        const hasPred = s.home !== undefined && s.home !== null && s.away !== undefined && s.away !== null;
+        if(hasPred && s.home === actual.home && s.away === actual.away){
+          cls = 'tag-exact';
+        }else if(hasPred){
+          const actualOutcome = actual.home === actual.away ? 'X' : (actual.home > actual.away ? '1' : '2');
+          const predOutcome = s.home === s.away ? 'X' : (s.home > s.away ? '1' : '2');
+          if(actualOutcome === predOutcome) cls = 'tag-outcome';
+        }
+        tagHtml = `<div class="real-tag-row"><span class="real-tag ${cls}">Gerçek: ${actual.home}-${actual.away}</span></div>`;
+      }
+    }
+
     return `
-      <div class="match">
-        <div class="name home">${home}</div>
-        ${crestHTML(home)}
-        <div class="score-box">
-          <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="home" value="${s.home ?? ''}">
-          <span>:</span>
-          <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="away" value="${s.away ?? ''}">
+      <div class="match-block">
+        <div class="match">
+          <div class="name home">${home}</div>
+          ${crestHTML(home)}
+          <div class="score-box">
+            <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="home" value="${s.home ?? ''}">
+            <span>:</span>
+            <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="away" value="${s.away ?? ''}">
+          </div>
+          ${crestHTML(away)}
+          <div class="name away">${away}</div>
         </div>
-        ${crestHTML(away)}
-        <div class="name away">${away}</div>
+        ${tagHtml}
       </div>
     `;
   }).join('');
