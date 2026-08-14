@@ -157,6 +157,31 @@
   }
   .back-btn:hover{color:var(--text);border-color:var(--text-dim);}
 
+  .h2h-pickers{
+    display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:24px;
+  }
+  .h2h-select{
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--text);
+    background:rgba(255,255,255,0.06);border:1px solid var(--line);border-radius:100px;
+    padding:9px 16px;cursor:pointer;appearance:none;text-align:center;
+  }
+  .h2h-vs{font-family:'Poppins',sans-serif;font-weight:800;font-size:13px;color:var(--text-dim);}
+
+  .h2h-score-row{
+    display:flex;align-items:center;justify-content:center;gap:24px;
+    background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:16px;
+    padding:24px 16px;
+  }
+  .h2h-total-block{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .h2h-dot{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.3);}
+  .h2h-total{font-family:'Poppins',sans-serif;font-weight:800;font-size:32px;color:var(--gold);}
+  .h2h-mid{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .h2h-record{font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;color:var(--text);}
+  .h2h-record-label{font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;}
+  .h2h-leader{
+    text-align:center;font-size:12.5px;font-weight:600;color:var(--gold);margin-top:12px;
+  }
+
   .head{text-align:center;margin-bottom:20px;}
   .head .eyebrow{
     font-size:11px;font-weight:600;letter-spacing:.18em;
@@ -218,7 +243,15 @@
   .score-box input::-webkit-outer-spin-button,
   .score-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
   .score-box input:focus{border-color:var(--gold);background:rgba(240,195,65,0.1);}
+  .score-box input:disabled{opacity:.55;cursor:not-allowed;}
   .score-box span{color:var(--text-dim);font-weight:600;font-size:14px;}
+
+  .lock-notice{
+    max-width:620px;margin:0 auto 18px;text-align:center;
+    background:rgba(240,195,65,0.08);border:1px solid rgba(240,195,65,0.3);
+    border-radius:12px;padding:10px 14px;
+    font-size:12.5px;font-weight:600;color:var(--gold);
+  }
 
   .footer-bar{max-width:620px;margin:26px auto 0;display:flex;align-items:center;justify-content:center;gap:14px;}
   .save-btn{
@@ -255,7 +288,8 @@
   <div class="week-strip" id="weekStrip"></div>
 
   <div id="fixtureView">
-    <div id="fixtures"></div>
+    <div id="lockNotice"></div>
+  <div id="fixtures"></div>
 
     <div class="footer-bar">
       <button class="save-btn" id="saveBtn">Skorları Kaydet</button>
@@ -276,6 +310,8 @@
 
   <div id="standingsView" style="display:none;"></div>
 
+  <div id="h2hView" style="display:none;"></div>
+
 </div>
 
 <script>
@@ -294,7 +330,7 @@ const CLUBS = {
   "Corendon Alanyaspor":      {code:"ALN", c1:"#E8720C", c2:"#127A4E", logo:"alanyaspor1.png"},
   "İstanbul Başakşehir":      {code:"İBFK",c1:"#E8720C", c2:"#0F2A5C", logo:"istanbulbasaksehir.png"},
   "Kocaelispor":              {code:"KCE", c1:"#127A4E", c2:"#151515", logo:"kocaelispor11.png"},
-  "Amed Sportif Faaliyetler": {code:"AMED",c1:"#C8102E", c2:"#127A4E", logo:null},
+  "Amed Sportif Faaliyetler": {code:"AMED",c1:"#C8102E", c2:"#127A4E", logo:"tff02.png"},
   "Erzurumspor FK":           {code:"EZS", c1:"#0F3E8C", c2:"#3a6ac2", logo:"Erzurumsporfk.png"},
   "Beşiktaş":                 {code:"BJK", c1:"#151515", c2:"#3a3a3a", logo:"exbesiktas51.png"},
   "Eyüpspor":                 {code:"EYP", c1:"#5B2A86", c2:"#F6C500", logo:"eyupspor.png"},
@@ -347,6 +383,7 @@ const ADMIN_NAME = "Admin";
 let currentPlayer = PLAYERS[0];
 let currentWeek = 1;
 let standingsOpen = false;
+let h2hOpen = false;
 let cachedData = null; // en son çekilen ortak veri (manuel yenile ile güncellenir)
 
 function crestHTML(teamName){
@@ -382,30 +419,36 @@ function renderPlayerBar(){
   PLAYERS.forEach(p => {
     const btn = document.createElement('button');
     const teamClass = PLAYER_TEAM_CLASS[p] || '';
-    btn.className = 'player-btn ' + teamClass + (p === currentPlayer && !standingsOpen ? ' active' : '');
+    btn.className = 'player-btn ' + teamClass + (p === currentPlayer && !standingsOpen && !h2hOpen ? ' active' : '');
     btn.textContent = p;
-    btn.onclick = () => { standingsOpen = false; currentPlayer = p; toggleStandings(false); renderFixtures(); };
+    btn.onclick = () => { currentPlayer = p; closeOverlays(); renderFixtures(); };
     bar.appendChild(btn);
   });
   const adminBtn = document.createElement('button');
-  adminBtn.className = 'player-btn admin' + (currentPlayer === ADMIN_NAME && !standingsOpen ? ' active' : '');
+  adminBtn.className = 'player-btn admin' + (currentPlayer === ADMIN_NAME && !standingsOpen && !h2hOpen ? ' active' : '');
   adminBtn.textContent = ADMIN_NAME;
-  adminBtn.onclick = () => { standingsOpen = false; currentPlayer = ADMIN_NAME; toggleStandings(false); renderFixtures(); };
+  adminBtn.onclick = () => { currentPlayer = ADMIN_NAME; closeOverlays(); renderFixtures(); };
   bar.appendChild(adminBtn);
 
   const standingsBtn = document.createElement('button');
   standingsBtn.className = 'player-btn standings-tab' + (standingsOpen ? ' active' : '');
   standingsBtn.textContent = '🏆 Puan Durumu';
-  standingsBtn.onclick = () => { standingsOpen = true; toggleStandings(true); };
+  standingsBtn.onclick = () => { toggleStandings(true); };
   bar.appendChild(standingsBtn);
+
+  const h2hBtn = document.createElement('button');
+  h2hBtn.className = 'player-btn standings-tab' + (h2hOpen ? ' active' : '');
+  h2hBtn.textContent = '⚔️ Kafa Kafaya';
+  h2hBtn.onclick = () => { toggleH2H(true); };
+  bar.appendChild(h2hBtn);
 
   const banner = document.getElementById('adminBanner');
   const isAdmin = currentPlayer === ADMIN_NAME;
-  banner.innerHTML = (isAdmin && !standingsOpen)
+  banner.innerHTML = (isAdmin && !standingsOpen && !h2hOpen)
     ? `<div class="admin-banner">Admin modundasın — burada girdiğin skorlar GERÇEK maç sonucu sayılır ve puanlamayı belirler.</div>`
     : '';
   document.getElementById('saveBtn').textContent = isAdmin ? 'Gerçek Skoru Kaydet' : 'Skorları Kaydet';
-  document.getElementById('finalizeBar').style.display = (isAdmin && !standingsOpen) ? 'flex' : 'none';
+  document.getElementById('finalizeBar').style.display = (isAdmin && !standingsOpen && !h2hOpen) ? 'flex' : 'none';
 }
 
 function renderWeekGrid(){
@@ -542,13 +585,135 @@ async function renderStandings(forceRefresh){
   document.getElementById('backFromStandings').onclick = () => toggleStandings(false);
 }
 
+function closeOverlays(){
+  standingsOpen = false;
+  h2hOpen = false;
+  document.getElementById('fixtureView').style.display = 'block';
+  document.getElementById('standingsView').style.display = 'none';
+  document.getElementById('h2hView').style.display = 'none';
+  document.getElementById('weekStrip').style.display = 'flex';
+}
+
 function toggleStandings(show){
-  standingsOpen = show;
-  document.getElementById('fixtureView').style.display = show ? 'none' : 'block';
-  document.getElementById('standingsView').style.display = show ? 'block' : 'none';
-  document.getElementById('weekStrip').style.display = show ? 'none' : 'flex';
+  if(!show){ closeOverlays(); renderPlayerBar(); return; }
+  standingsOpen = true;
+  h2hOpen = false;
+  document.getElementById('fixtureView').style.display = 'none';
+  document.getElementById('standingsView').style.display = 'block';
+  document.getElementById('h2hView').style.display = 'none';
+  document.getElementById('weekStrip').style.display = 'none';
   renderPlayerBar();
-  if(show) renderStandings(true);
+  renderStandings(true);
+}
+
+let h2hPlayerA = null;
+let h2hPlayerB = null;
+
+function toggleH2H(show){
+  if(!show){ closeOverlays(); renderPlayerBar(); return; }
+  h2hOpen = true;
+  standingsOpen = false;
+  document.getElementById('fixtureView').style.display = 'none';
+  document.getElementById('standingsView').style.display = 'none';
+  document.getElementById('h2hView').style.display = 'block';
+  document.getElementById('weekStrip').style.display = 'none';
+  if(!h2hPlayerA) h2hPlayerA = PLAYERS[0];
+  if(!h2hPlayerB) h2hPlayerB = PLAYERS[1];
+  renderPlayerBar();
+  renderH2H(true);
+}
+
+async function renderH2H(forceRefresh){
+  const el = document.getElementById('h2hView');
+  el.innerHTML = `<div class="standings-empty">yükleniyor…</div>`;
+
+  if(forceRefresh || !cachedData){
+    cachedData = await fetchAllData();
+  }
+
+  const finalizedWeeks = Object.keys(cachedData.__FINALIZED__ || {}).map(Number).sort((a,b) => a-b);
+
+  const pickerHtml = (label, selected, otherId) => `
+    <div class="h2h-picker">
+      <span class="h2h-label">${label}</span>
+      <select class="h2h-select" id="${otherId}">
+        ${PLAYERS.map(p => `<option value="${p}" ${p===selected?'selected':''}>${p}</option>`).join('')}
+      </select>
+    </div>
+  `;
+
+  if(finalizedWeeks.length === 0){
+    el.innerHTML = `
+      <div class="standings-wrap">
+        <div class="standings-empty">Henüz hiçbir hafta kesinleşmedi.<br>Karşılaştırma için en az bir hafta kesinleşmesi lazım.</div>
+        <button class="back-btn" id="backFromH2H">← Fikstüre Dön</button>
+      </div>
+    `;
+    document.getElementById('backFromH2H').onclick = () => toggleH2H(false);
+    return;
+  }
+
+  let totalA = 0, totalB = 0;
+  let winsA = 0, winsB = 0, ties = 0;
+  const weekRows = finalizedWeeks.map(w => {
+    const ptsA = (cachedData.__POINTS__?.[h2hPlayerA]?.[w]) || 0;
+    const ptsB = (cachedData.__POINTS__?.[h2hPlayerB]?.[w]) || 0;
+    totalA += ptsA; totalB += ptsB;
+    if(ptsA > ptsB) winsA++; else if(ptsB > ptsA) winsB++; else ties++;
+    return {w, ptsA, ptsB};
+  });
+
+  const [c1a, c2a] = PLAYER_DOT_COLORS[h2hPlayerA] || ["#888","#888"];
+  const [c1b, c2b] = PLAYER_DOT_COLORS[h2hPlayerB] || ["#888","#888"];
+  const leader = totalA > totalB ? h2hPlayerA : (totalB > totalA ? h2hPlayerB : null);
+
+  el.innerHTML = `
+    <div class="standings-wrap">
+      <div class="h2h-pickers">
+        ${pickerHtml('', h2hPlayerA, 'h2hSelectA')}
+        <span class="h2h-vs">VS</span>
+        ${pickerHtml('', h2hPlayerB, 'h2hSelectB')}
+      </div>
+
+      <div class="h2h-score-row">
+        <div class="h2h-total-block">
+          <div class="h2h-dot" style="background:linear-gradient(135deg, ${c1a} 50%, ${c2a} 50%);"></div>
+          <div class="h2h-total">${totalA}</div>
+        </div>
+        <div class="h2h-mid">
+          <div class="h2h-record">${winsA} - ${ties} - ${winsB}</div>
+          <div class="h2h-record-label">galibiyet - berabere - galibiyet</div>
+        </div>
+        <div class="h2h-total-block">
+          <div class="h2h-dot" style="background:linear-gradient(135deg, ${c1b} 50%, ${c2b} 50%);"></div>
+          <div class="h2h-total">${totalB}</div>
+        </div>
+      </div>
+
+      ${leader ? `<div class="h2h-leader">${leader} toplamda ${Math.abs(totalA-totalB)} puan önde</div>` : `<div class="h2h-leader">Toplamda berabereler</div>`}
+
+      <div class="standings-table" style="margin-top:18px;">
+        <div class="st-row st-head" style="grid-template-columns:1fr 60px 60px;">
+          <div>Hafta</div>
+          <div>${h2hPlayerA}</div>
+          <div>${h2hPlayerB}</div>
+        </div>
+        ${weekRows.map(r => `
+          <div class="st-row" style="grid-template-columns:1fr 60px 60px;">
+            <div style="color:var(--text-dim);font-size:13px;">${r.w}. Hafta</div>
+            <div class="st-mini" style="font-weight:${r.ptsA>=r.ptsB?'800':'400'};color:${r.ptsA>r.ptsB?'var(--gold)':'var(--text-dim)'};">${r.ptsA}</div>
+            <div class="st-mini" style="font-weight:${r.ptsB>=r.ptsA?'800':'400'};color:${r.ptsB>r.ptsA?'var(--gold)':'var(--text-dim)'};">${r.ptsB}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <button class="back-btn" id="backFromH2H">← Fikstüre Dön</button>
+    </div>
+  `;
+
+  document.getElementById('backFromH2H').onclick = () => toggleH2H(false);
+  document.getElementById('h2hSelectA').onchange = (e) => { h2hPlayerA = e.target.value; renderH2H(false); };
+  document.getElementById('h2hSelectB').onchange = (e) => { h2hPlayerB = e.target.value; renderH2H(false); };
 }
 
 async function loadWeekScores(forceRefresh){
@@ -575,6 +740,7 @@ async function renderFixtures(forceRefresh){
 
   const finalized = cachedData.__FINALIZED__ && cachedData.__FINALIZED__[currentWeek];
   const showRealScores = finalized && currentPlayer !== ADMIN_NAME;
+  const isLocked = finalized && currentPlayer !== ADMIN_NAME;
   const adminResults = (cachedData.__RESULTS__ && cachedData.__RESULTS__[currentWeek]) || {};
 
   root.innerHTML = matches.map((m, idx) => {
@@ -598,15 +764,17 @@ async function renderFixtures(forceRefresh){
       }
     }
 
+    const disabledAttr = isLocked ? 'disabled' : '';
+
     return `
       <div class="match-block">
         <div class="match">
           <div class="name home">${home}</div>
           ${crestHTML(home)}
           <div class="score-box">
-            <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="home" value="${s.home ?? ''}">
+            <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="home" value="${s.home ?? ''}" ${disabledAttr}>
             <span>:</span>
-            <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="away" value="${s.away ?? ''}">
+            <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="away" value="${s.away ?? ''}" ${disabledAttr}>
           </div>
           ${crestHTML(away)}
           <div class="name away">${away}</div>
@@ -615,6 +783,12 @@ async function renderFixtures(forceRefresh){
       </div>
     `;
   }).join('');
+
+  document.getElementById('lockNotice').innerHTML = isLocked
+    ? `<div class="lock-notice">🔒 Bu hafta kesinleşti — tahminler kilitlendi, değiştirilemez.</div>`
+    : '';
+  document.getElementById('saveBtn').style.display = isLocked ? 'none' : 'inline-block';
+  document.getElementById('refreshBtn').style.display = isLocked ? 'none' : 'inline-block';
 
   wireCrestImages();
 }
