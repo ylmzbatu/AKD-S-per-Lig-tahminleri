@@ -255,22 +255,39 @@
 
   .locktime-box{
     max-width:620px;margin:0 auto 20px;
-    background:rgba(193,68,60,0.08);border:1px solid rgba(193,68,60,0.35);
-    border-radius:14px;padding:14px 16px;
-    display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+    background:linear-gradient(160deg, rgba(193,68,60,0.14), rgba(193,68,60,0.04));
+    border:1px solid rgba(193,68,60,0.32);
+    border-radius:18px;padding:18px 20px;
   }
-  .locktime-label{font-size:12px;color:#e0837c;font-weight:600;}
+  .locktime-header{
+    display:flex;align-items:center;gap:8px;
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;
+    color:#e8938c;margin-bottom:14px;letter-spacing:.01em;
+  }
+  .locktime-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
   .locktime-box input[type="datetime-local"]{
-    font-family:'Poppins',sans-serif;font-size:13px;color:var(--text);
-    background:rgba(255,255,255,0.06);border:1px solid var(--line);border-radius:8px;
-    padding:7px 10px;
+    flex:1;min-width:190px;
+    font-family:'Poppins',sans-serif;font-weight:600;font-size:13.5px;color:#fff;
+    background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.14);border-radius:10px;
+    padding:10px 12px;color-scheme:dark;
+  }
+  .locktime-box input[type="datetime-local"]:focus{
+    outline:none;border-color:#c1443c;background:rgba(0,0,0,0.35);
   }
   .locktime-set-btn{
-    font-family:'Poppins',sans-serif;font-weight:600;font-size:12.5px;color:#fff;
-    background:#c1443c;border:none;border-radius:100px;padding:8px 16px;cursor:pointer;
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;color:#fff;
+    background:linear-gradient(135deg,#c1443c,#9c332c);border:none;border-radius:10px;
+    padding:10px 20px;cursor:pointer;flex:0 0 auto;
+    box-shadow:0 2px 8px rgba(193,68,60,0.35);
   }
-  .locktime-set-btn:hover{opacity:.9;}
-  .locktime-current{font-size:11.5px;color:var(--text-dim);width:100%;text-align:center;}
+  .locktime-set-btn:hover{filter:brightness(1.08);}
+  .locktime-status{
+    display:flex;align-items:center;gap:7px;
+    margin-top:13px;font-size:12px;color:var(--text-dim);
+  }
+  .locktime-status .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
+  .locktime-status .dot.set{background:#3fb27f;box-shadow:0 0 6px rgba(63,178,127,.7);}
+  .locktime-status .dot.unset{background:#666;}
 
   .footer-bar{max-width:620px;margin:26px auto 0;display:flex;align-items:center;justify-content:center;gap:14px;}
   .save-btn{
@@ -820,14 +837,22 @@ async function renderFixtures(forceRefresh){
 
   const lockBox = document.getElementById('lockTimeBox');
   if(currentPlayer === ADMIN_NAME){
-    const currentLabel = lockTimeStr
-      ? `Şu an ayarlı: ${new Date(lockTimeStr).toLocaleString('tr-TR', {weekday:'short', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})}`
-      : 'Bu hafta için kilit zamanı ayarlanmadı.';
+    const hasLock = !!lockTimeStr;
+    const currentLabel = hasLock
+      ? `Kilit: ${new Date(lockTimeStr).toLocaleString('tr-TR', {weekday:'short', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})}`
+      : 'Bu hafta için henüz kilit zamanı ayarlanmadı';
     lockBox.innerHTML = `
-      <span class="locktime-label">🔒 ${currentWeek}. hafta kilit zamanı:</span>
-      <input type="datetime-local" id="lockTimeInput" value="${lockTimeStr ? lockTimeStr.slice(0,16) : ''}">
-      <button class="locktime-set-btn" id="lockTimeSetBtn">Ayarla</button>
-      <span class="locktime-current">${currentLabel}</span>
+      <div class="locktime-box">
+        <div class="locktime-header">🔒 ${currentWeek}. Hafta — Tahmin Kilidi</div>
+        <div class="locktime-row">
+          <input type="datetime-local" id="lockTimeInput" value="${lockTimeStr ? lockTimeStr.slice(0,16) : ''}">
+          <button class="locktime-set-btn" id="lockTimeSetBtn">Ayarla</button>
+        </div>
+        <div class="locktime-status">
+          <span class="dot ${hasLock ? 'set' : 'unset'}"></span>
+          <span>${currentLabel}</span>
+        </div>
+      </div>
     `;
     document.getElementById('lockTimeSetBtn').onclick = async () => {
       const val = document.getElementById('lockTimeInput').value;
