@@ -280,16 +280,23 @@ async function fetchAllData(){
     const res = await fetch(`${JSONBIN_URL}/latest`, {
       headers: { "X-Master-Key": JSONBIN_KEY }
     });
+    if(!res.ok){
+      const errText = await res.text();
+      console.error("jsonbin GET hatası:", res.status, errText);
+      alert(`Veri okunamadı (HTTP ${res.status}): ${errText}`);
+      return {};
+    }
     const json = await res.json();
     return json.record || {};
   }catch(e){
-    console.error("Veri okunamadı:", e);
+    console.error("Veri okunamadı (ağ hatası):", e);
+    alert("Veri okunamadı — internet bağlantısını kontrol et. (" + e.message + ")");
     return {};
   }
 }
 
 async function writeAllData(data){
-  await fetch(JSONBIN_URL, {
+  const res = await fetch(JSONBIN_URL, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -297,6 +304,11 @@ async function writeAllData(data){
     },
     body: JSON.stringify(data)
   });
+  if(!res.ok){
+    const errText = await res.text();
+    console.error("jsonbin PUT hatası:", res.status, errText);
+    throw new Error(`HTTP ${res.status}: ${errText}`);
+  }
 }
 
 async function loadWeekScores(forceRefresh){
@@ -376,7 +388,8 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     status.classList.add('show');
     setTimeout(() => status.classList.remove('show'), 1800);
   }catch(e){
-    alert('Kaydetme başarısız oldu, tekrar dene.');
+    console.error("Kaydetme hatası:", e);
+    alert('Kaydetme başarısız oldu: ' + e.message);
   }
   btn.disabled = false;
 });
