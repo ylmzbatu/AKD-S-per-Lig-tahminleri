@@ -985,7 +985,7 @@ document.getElementById('resetBtn').addEventListener('click', async () => {
   const btn = document.getElementById('resetBtn');
   btn.disabled = true;
   try{
-    cachedData = {};
+    cachedData = { "_reset_at": new Date().toISOString() };
     await writeAllData(cachedData);
     alert('Tüm veriler sıfırlandı.');
     renderFixtures(true);
