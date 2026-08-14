@@ -253,6 +253,25 @@
     font-size:12.5px;font-weight:600;color:var(--gold);
   }
 
+  .locktime-box{
+    max-width:620px;margin:0 auto 20px;
+    background:rgba(193,68,60,0.08);border:1px solid rgba(193,68,60,0.35);
+    border-radius:14px;padding:14px 16px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  }
+  .locktime-label{font-size:12px;color:#e0837c;font-weight:600;}
+  .locktime-box input[type="datetime-local"]{
+    font-family:'Poppins',sans-serif;font-size:13px;color:var(--text);
+    background:rgba(255,255,255,0.06);border:1px solid var(--line);border-radius:8px;
+    padding:7px 10px;
+  }
+  .locktime-set-btn{
+    font-family:'Poppins',sans-serif;font-weight:600;font-size:12.5px;color:#fff;
+    background:#c1443c;border:none;border-radius:100px;padding:8px 16px;cursor:pointer;
+  }
+  .locktime-set-btn:hover{opacity:.9;}
+  .locktime-current{font-size:11.5px;color:var(--text-dim);width:100%;text-align:center;}
+
   .footer-bar{max-width:620px;margin:26px auto 0;display:flex;align-items:center;justify-content:center;gap:14px;}
   .save-btn{
     font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--bg);
@@ -288,7 +307,8 @@
   <div class="week-strip" id="weekStrip"></div>
 
   <div id="fixtureView">
-    <div id="lockNotice"></div>
+    <div id="lockTimeBox"></div>
+  <div id="lockNotice"></div>
   <div id="fixtures"></div>
 
     <div class="footer-bar">
@@ -739,8 +759,10 @@ async function renderFixtures(forceRefresh){
   const saved = await loadWeekScores(forceRefresh);
 
   const finalized = cachedData.__FINALIZED__ && cachedData.__FINALIZED__[currentWeek];
+  const lockTimeStr = cachedData.__LOCKTIME__ && cachedData.__LOCKTIME__[currentWeek];
+  const timeLocked = lockTimeStr && new Date() >= new Date(lockTimeStr);
   const showRealScores = finalized && currentPlayer !== ADMIN_NAME;
-  const isLocked = finalized && currentPlayer !== ADMIN_NAME;
+  const isLocked = (finalized || timeLocked) && currentPlayer !== ADMIN_NAME;
   const adminResults = (cachedData.__RESULTS__ && cachedData.__RESULTS__[currentWeek]) || {};
 
   root.innerHTML = matches.map((m, idx) => {
@@ -784,11 +806,44 @@ async function renderFixtures(forceRefresh){
     `;
   }).join('');
 
-  document.getElementById('lockNotice').innerHTML = isLocked
-    ? `<div class="lock-notice">🔒 Bu hafta kesinleşti — tahminler kilitlendi, değiştirilemez.</div>`
+  let noticeText = '';
+  if(finalized){
+    noticeText = '🔒 Bu hafta kesinleşti — tahminler kilitlendi, değiştirilemez.';
+  }else if(timeLocked){
+    noticeText = '🔒 Bu haftanın kilit zamanı geçti — tahminler kilitlendi.';
+  }
+  document.getElementById('lockNotice').innerHTML = noticeText
+    ? `<div class="lock-notice">${noticeText}</div>`
     : '';
   document.getElementById('saveBtn').style.display = isLocked ? 'none' : 'inline-block';
   document.getElementById('refreshBtn').style.display = isLocked ? 'none' : 'inline-block';
+
+  const lockBox = document.getElementById('lockTimeBox');
+  if(currentPlayer === ADMIN_NAME){
+    const currentLabel = lockTimeStr
+      ? `Şu an ayarlı: ${new Date(lockTimeStr).toLocaleString('tr-TR', {weekday:'short', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'})}`
+      : 'Bu hafta için kilit zamanı ayarlanmadı.';
+    lockBox.innerHTML = `
+      <span class="locktime-label">🔒 ${currentWeek}. hafta kilit zamanı:</span>
+      <input type="datetime-local" id="lockTimeInput" value="${lockTimeStr ? lockTimeStr.slice(0,16) : ''}">
+      <button class="locktime-set-btn" id="lockTimeSetBtn">Ayarla</button>
+      <span class="locktime-current">${currentLabel}</span>
+    `;
+    document.getElementById('lockTimeSetBtn').onclick = async () => {
+      const val = document.getElementById('lockTimeInput').value;
+      if(!val) return;
+      if(!cachedData.__LOCKTIME__) cachedData.__LOCKTIME__ = {};
+      cachedData.__LOCKTIME__[currentWeek] = val;
+      try{
+        await writeAllData(cachedData);
+        renderFixtures();
+      }catch(e){
+        alert('Kilit zamanı kaydedilemedi: ' + e.message);
+      }
+    };
+  }else{
+    lockBox.innerHTML = '';
+  }
 
   wireCrestImages();
 }
