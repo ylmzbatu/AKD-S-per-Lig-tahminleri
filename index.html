@@ -421,13 +421,13 @@ function renderPlayerBar(){
     const teamClass = PLAYER_TEAM_CLASS[p] || '';
     btn.className = 'player-btn ' + teamClass + (p === currentPlayer && !standingsOpen && !h2hOpen ? ' active' : '');
     btn.textContent = p;
-    btn.onclick = () => { currentPlayer = p; closeOverlays(); renderFixtures(); };
+    btn.onclick = () => { currentPlayer = p; closeOverlays(); renderPlayerBar(); renderFixtures(); };
     bar.appendChild(btn);
   });
   const adminBtn = document.createElement('button');
   adminBtn.className = 'player-btn admin' + (currentPlayer === ADMIN_NAME && !standingsOpen && !h2hOpen ? ' active' : '');
   adminBtn.textContent = ADMIN_NAME;
-  adminBtn.onclick = () => { currentPlayer = ADMIN_NAME; closeOverlays(); renderFixtures(); };
+  adminBtn.onclick = () => { currentPlayer = ADMIN_NAME; closeOverlays(); renderPlayerBar(); renderFixtures(); };
   bar.appendChild(adminBtn);
 
   const standingsBtn = document.createElement('button');
