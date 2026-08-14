@@ -43,7 +43,119 @@
     cursor:pointer;
   }
   .player-btn:hover{border-color:var(--gold);color:var(--text);}
-  .player-btn.active{background:var(--gold);border-color:var(--gold);color:var(--bg);}
+  .player-btn.active{background:var(--gold);border-color:var(--gold);color:var(--bg);text-shadow:0 1px 2px rgba(0,0,0,.4);}
+
+  /* Batuhan — Galatasaray (kırmızı / turuncuya yakın sarı, yarı yarıya) */
+  .player-btn.p-gs{
+    background:linear-gradient(135deg,#A32638 50%,#F2A93B 50%);
+    border-color:#A32638;color:#fff;
+    -webkit-text-stroke:0.5px rgba(0,0,0,.5);
+  }
+  .player-btn.p-gs.active{box-shadow:0 0 0 2px #fff;}
+
+  /* Furkan / Ahmet / Samet — Beşiktaş (siyah / beyaz, yarı yarıya) */
+  .player-btn.p-bjk{
+    background:linear-gradient(135deg,#0a0a0a 50%,#ffffff 50%);
+    border-color:#fff;color:#fff;
+    -webkit-text-stroke:0.6px #000;
+  }
+  .player-btn.p-bjk.active{box-shadow:0 0 0 2px #fff;}
+
+  /* Emre — Fenerbahçe (lacivert / sarı, yarı yarıya) */
+  .player-btn.p-fb{
+    background:linear-gradient(135deg,#132A6B 50%,#F6C500 50%);
+    border-color:#132A6B;color:#fff;
+    -webkit-text-stroke:0.5px rgba(0,0,0,.5);
+  }
+  .player-btn.p-fb.active{box-shadow:0 0 0 2px #fff;}
+
+  /* Rıdvan — Türk Milli Takımı (kırmızı / beyaz, yarı yarıya) */
+  .player-btn.p-tr{
+    background:linear-gradient(135deg,#E30A17 50%,#ffffff 50%);
+    border-color:#E30A17;color:#fff;
+    -webkit-text-stroke:0.6px #B00;
+  }
+  .player-btn.p-tr.active{box-shadow:0 0 0 2px #fff;}
+
+  /* Admin — her zaman dolu kırmızı, ayırt edici */
+  .player-btn.admin{background:#7a1710;border-color:#c1443c;color:#fff;}
+  .player-btn.admin:hover{border-color:#fff;}
+  .player-btn.admin.active{background:#c1443c;box-shadow:0 0 0 2px #fff;}
+
+  .player-btn.standings-tab{
+    background:rgba(240,195,65,0.12);border-color:rgba(240,195,65,0.5);color:var(--gold);
+  }
+  .player-btn.standings-tab:hover{border-color:var(--gold);}
+  .player-btn.standings-tab.active{background:var(--gold);color:var(--bg);box-shadow:0 0 0 2px #fff;}
+
+  .admin-banner{
+    max-width:620px;margin:0 auto 18px;text-align:center;
+    background:rgba(193,68,60,0.12);border:1px solid rgba(193,68,60,0.4);
+    border-radius:12px;padding:10px 14px;
+    font-size:12px;font-weight:600;color:#e0837c;
+  }
+  .finalize-btn{
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:#fff;
+    background:#c1443c;border:none;border-radius:100px;padding:12px 26px;cursor:pointer;
+  }
+  .finalize-btn:hover{opacity:.9;}
+  .finalize-btn:disabled{opacity:.5;cursor:default;}
+  .reset-btn{
+    font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;color:#e0837c;
+    background:transparent;border:1px solid rgba(193,68,60,0.5);border-radius:100px;
+    padding:11px 20px;cursor:pointer;
+  }
+  .reset-btn:hover{background:rgba(193,68,60,0.12);border-color:#c1443c;}
+  .reset-btn:disabled{opacity:.5;cursor:default;}
+
+  .head-btns{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;}
+  .standings-btn{
+    font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;
+    color:var(--gold);background:rgba(240,195,65,0.1);border:1px solid rgba(240,195,65,0.4);
+    border-radius:100px;padding:10px 20px;cursor:pointer;
+  }
+  .standings-btn:hover{background:rgba(240,195,65,0.18);}
+  .standings-btn.active{background:var(--gold);color:var(--bg);border-color:var(--gold);}
+
+  .standings-wrap{max-width:620px;margin:0 auto;}
+  .standings-sub{
+    text-align:center;font-size:12px;color:var(--text-dim);margin-bottom:22px;
+  }
+  .standings-table{
+    background:var(--surface, rgba(255,255,255,0.03));
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  }
+  .st-row{
+    display:grid;
+    grid-template-columns:34px 1fr 52px 52px 64px;
+    align-items:center;gap:8px;
+    padding:14px 16px;border-bottom:1px solid var(--line);
+  }
+  .st-row:last-child{border-bottom:none;}
+  .st-row.st-head{
+    font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-dim);padding:10px 16px;background:rgba(255,255,255,0.03);
+  }
+  .st-rank{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--text-dim);text-align:center;}
+  .st-row.top1 .st-rank{font-size:18px;}
+  .st-row.top2 .st-rank{font-size:16px;}
+  .st-row.top3 .st-rank{font-size:16px;}
+  .st-name{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14.5px;}
+  .st-dot{width:14px;height:14px;border-radius:4px;flex:0 0 auto;border:1px solid rgba(255,255,255,.3);}
+  .st-mini{text-align:center;font-size:13px;color:var(--text-dim);font-family:'Poppins',sans-serif;}
+  .st-total{text-align:center;font-weight:800;font-size:16px;color:var(--gold);}
+  .st-row.top1{background:rgba(240,195,65,0.08);}
+  .standings-empty{
+    text-align:center;color:var(--text-dim);font-size:13px;
+    padding:40px 20px;line-height:1.7;
+  }
+  .back-btn{
+    display:block;margin:22px auto 0;
+    font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;
+    color:var(--text-dim);background:transparent;border:1px solid var(--line);
+    border-radius:100px;padding:9px 20px;cursor:pointer;
+  }
+  .back-btn:hover{color:var(--text);border-color:var(--text-dim);}
 
   .head{text-align:center;margin-bottom:20px;}
   .head .eyebrow{
@@ -52,29 +164,23 @@
   }
   .head h1{font-weight:800;font-size:30px;letter-spacing:.01em;margin:6px 0 14px;}
 
-  .week-btn{
-    display:block;margin:0 auto;
-    font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;
-    color:var(--bg);background:var(--gold);border:none;border-radius:100px;
-    padding:10px 22px;cursor:pointer;
+  .week-strip{
+    max-width:620px;margin:0 auto 24px;
+    overflow-x:auto;display:flex;gap:6px;padding-bottom:4px;
+    scrollbar-width:thin;
   }
-  .week-btn:hover{opacity:.9;}
-
-  .week-panel{
-    display:none;margin:18px auto 0;max-width:560px;
-    background:rgba(255,255,255,0.04);border:1px solid var(--line);
-    border-radius:16px;padding:16px;
+  .week-strip::-webkit-scrollbar{height:5px;}
+  .week-strip::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+  .week-pill{
+    flex:0 0 auto;
+    font-family:'Poppins',sans-serif;font-weight:600;font-size:11.5px;
+    color:var(--text-dim);background:rgba(255,255,255,0.05);border:1px solid var(--line);
+    border-radius:100px;width:30px;height:30px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
   }
-  .week-panel.open{display:block;}
-  .week-grid{display:grid;grid-template-columns:repeat(7, 1fr);gap:7px;}
-  .week-grid button{
-    font-family:'Poppins',sans-serif;font-weight:600;font-size:12.5px;
-    color:var(--text);background:rgba(255,255,255,0.05);border:1px solid var(--line);
-    border-radius:8px;padding:9px 0;cursor:pointer;
-  }
-  .week-grid button:hover{border-color:var(--gold);color:var(--gold);}
-  .week-grid button.active{background:var(--gold);border-color:var(--gold);color:var(--bg);}
-  @media (max-width:480px){.week-grid{grid-template-columns:repeat(5, 1fr);}}
+  .week-pill:hover{border-color:var(--gold);color:var(--text);}
+  .week-pill.active{background:var(--gold);border-color:var(--gold);color:var(--bg);}
 
   .match{
     display:grid;grid-template-columns:1fr 40px 92px 40px 1fr;
@@ -130,27 +236,36 @@
 
   <div class="player-bar" id="playerBar"></div>
 
+  <div id="adminBanner"></div>
+
   <div class="head">
     <div class="eyebrow">Trendyol Süper Lig · 2026/2027</div>
     <h1 id="weekTitle">1. Hafta</h1>
-    <button class="week-btn" id="weekToggle">Hafta Değiştir</button>
-    <div class="week-panel" id="weekPanel">
-      <div class="week-grid" id="weekGrid"></div>
+  </div>
+
+  <div class="week-strip" id="weekStrip"></div>
+
+  <div id="fixtureView">
+    <div id="fixtures"></div>
+
+    <div class="footer-bar">
+      <button class="save-btn" id="saveBtn">Skorları Kaydet</button>
+      <button class="refresh-btn" id="refreshBtn">Yenile ↻</button>
+      <span class="save-status" id="saveStatus">Kaydedildi ✓</span>
+    </div>
+
+    <div class="footer-bar" id="finalizeBar" style="display:none; margin-top:12px; gap:10px;">
+      <button class="finalize-btn" id="finalizeBtn">Sonuçları Kesinleştir</button>
+      <button class="reset-btn" id="resetBtn">Verileri Sıfırla</button>
+    </div>
+
+    <div class="note">
+      Skorlar herkesle ortak, buluta kaydediliyor — arkadaşlarının yeni<br>
+      girdiklerini görmek için "Yenile" butonuna bas.
     </div>
   </div>
 
-  <div id="fixtures"></div>
-
-  <div class="footer-bar">
-    <button class="save-btn" id="saveBtn">Skorları Kaydet</button>
-    <button class="refresh-btn" id="refreshBtn">Yenile ↻</button>
-    <span class="save-status" id="saveStatus">Kaydedildi ✓</span>
-  </div>
-
-  <div class="note">
-    Skorlar herkesle ortak, buluta kaydediliyor — arkadaşlarının yeni<br>
-    girdiklerini görmek için "Yenile" butonuna bas.
-  </div>
+  <div id="standingsView" style="display:none;"></div>
 
 </div>
 
@@ -217,10 +332,12 @@ const FIXTURES_BY_WEEK = [
 ];
 
 // ---------- OYUNCULAR ----------
-const PLAYERS = ["Batuhan", "Ahmet", "Rıdvan", "Emre", "Samet"];
+const PLAYERS = ["Batuhan", "Furkan", "Ahmet", "Rıdvan", "Emre", "Samet"];
+const ADMIN_NAME = "Admin";
 
 let currentPlayer = PLAYERS[0];
 let currentWeek = 1;
+let standingsOpen = false;
 let cachedData = null; // en son çekilen ortak veri (manuel yenile ile güncellenir)
 
 function crestHTML(teamName){
@@ -245,28 +362,55 @@ function wireCrestImages(){
 function renderPlayerBar(){
   const bar = document.getElementById('playerBar');
   bar.innerHTML = '';
+  const PLAYER_TEAM_CLASS = {
+    "Batuhan": "p-gs",
+    "Furkan": "p-bjk",
+    "Ahmet": "p-bjk",
+    "Samet": "p-bjk",
+    "Emre": "p-fb",
+    "Rıdvan": "p-tr",
+  };
   PLAYERS.forEach(p => {
     const btn = document.createElement('button');
-    btn.className = 'player-btn' + (p === currentPlayer ? ' active' : '');
+    const teamClass = PLAYER_TEAM_CLASS[p] || '';
+    btn.className = 'player-btn ' + teamClass + (p === currentPlayer && !standingsOpen ? ' active' : '');
     btn.textContent = p;
-    btn.onclick = () => { currentPlayer = p; renderFixtures(); renderPlayerBar(); };
+    btn.onclick = () => { standingsOpen = false; currentPlayer = p; toggleStandings(false); renderFixtures(); };
     bar.appendChild(btn);
   });
+  const adminBtn = document.createElement('button');
+  adminBtn.className = 'player-btn admin' + (currentPlayer === ADMIN_NAME && !standingsOpen ? ' active' : '');
+  adminBtn.textContent = ADMIN_NAME;
+  adminBtn.onclick = () => { standingsOpen = false; currentPlayer = ADMIN_NAME; toggleStandings(false); renderFixtures(); };
+  bar.appendChild(adminBtn);
+
+  const standingsBtn = document.createElement('button');
+  standingsBtn.className = 'player-btn standings-tab' + (standingsOpen ? ' active' : '');
+  standingsBtn.textContent = '🏆 Puan Durumu';
+  standingsBtn.onclick = () => { standingsOpen = true; toggleStandings(true); };
+  bar.appendChild(standingsBtn);
+
+  const banner = document.getElementById('adminBanner');
+  const isAdmin = currentPlayer === ADMIN_NAME;
+  banner.innerHTML = (isAdmin && !standingsOpen)
+    ? `<div class="admin-banner">Admin modundasın — burada girdiğin skorlar GERÇEK maç sonucu sayılır ve puanlamayı belirler.</div>`
+    : '';
+  document.getElementById('saveBtn').textContent = isAdmin ? 'Gerçek Skoru Kaydet' : 'Skorları Kaydet';
+  document.getElementById('finalizeBar').style.display = (isAdmin && !standingsOpen) ? 'flex' : 'none';
 }
 
 function renderWeekGrid(){
-  const grid = document.getElementById('weekGrid');
-  grid.innerHTML = '';
+  const strip = document.getElementById('weekStrip');
+  strip.innerHTML = '';
   for(let w=1; w<=34; w++){
     const btn = document.createElement('button');
+    btn.className = 'week-pill' + (w === currentWeek ? ' active' : '');
     btn.textContent = w;
-    if(w === currentWeek) btn.classList.add('active');
     btn.onclick = () => {
       currentWeek = w;
-      document.getElementById('weekPanel').classList.remove('open');
       renderFixtures();
     };
-    grid.appendChild(btn);
+    strip.appendChild(btn);
   }
 }
 
@@ -311,9 +455,99 @@ async function writeAllData(data){
   }
 }
 
+// ---------- PUAN DURUMU ----------
+const PLAYER_DOT_COLORS = {
+  "Batuhan": ["#A32638", "#F2A93B"],
+  "Furkan":  ["#0a0a0a", "#ffffff"],
+  "Ahmet":   ["#0a0a0a", "#ffffff"],
+  "Samet":   ["#0a0a0a", "#ffffff"],
+  "Emre":    ["#132A6B", "#F6C500"],
+  "Rıdvan":  ["#E30A17", "#ffffff"],
+};
+
+async function renderStandings(forceRefresh){
+  const el = document.getElementById('standingsView');
+  el.innerHTML = `<div class="standings-empty">yükleniyor…</div>`;
+
+  if(forceRefresh || !cachedData){
+    cachedData = await fetchAllData();
+  }
+
+  const finalizedWeeks = Object.keys(cachedData.__FINALIZED__ || {}).map(Number);
+
+  if(finalizedWeeks.length === 0){
+    el.innerHTML = `
+      <div class="standings-wrap">
+        <div class="standings-empty">Henüz hiçbir hafta kesinleşmedi.<br>Admin bir haftayı kesinleştirdiğinde burada görünecek.</div>
+        <button class="back-btn" id="backFromStandings">← Fikstüre Dön</button>
+      </div>
+    `;
+    document.getElementById('backFromStandings').onclick = () => toggleStandings(false);
+    return;
+  }
+
+  const rows = PLAYERS.map(p => {
+    let total = 0, exact = 0, outcome = 0, weeksPlayed = 0;
+    finalizedWeeks.forEach(w => {
+      total += (cachedData.__POINTS__?.[p]?.[w]) || 0;
+      exact += (cachedData.__STATS__?.[p]?.[w]?.exact) || 0;
+      outcome += (cachedData.__STATS__?.[p]?.[w]?.outcome) || 0;
+      if(cachedData.__STATS__?.[p]?.[w]?.played) weeksPlayed++;
+    });
+    return {p, total, exact, outcome, weeksPlayed};
+  }).sort((a,b) => b.total - a.total || b.exact - a.exact);
+
+  const medals = ['🥇','🥈','🥉'];
+  const rankClass = ['top1','top2','top3'];
+
+  el.innerHTML = `
+    <div class="standings-wrap">
+      <div class="standings-sub">${finalizedWeeks.length} hafta sonuçlandı — toplam puana göre sıralı</div>
+      <div class="standings-table">
+        <div class="st-row st-head">
+          <div></div>
+          <div>Oyuncu</div>
+          <div>Tam</div>
+          <div>Sonuç</div>
+          <div>Puan</div>
+        </div>
+        ${rows.map((r, i) => {
+          const [c1, c2] = PLAYER_DOT_COLORS[r.p] || ["#888","#888"];
+          return `
+            <div class="st-row ${rankClass[i] || ''}">
+              <div class="st-rank">${medals[i] || (i+1)}</div>
+              <div class="st-name">
+                <div class="st-dot" style="background:linear-gradient(135deg, ${c1} 50%, ${c2} 50%);"></div>
+                ${r.p}
+              </div>
+              <div class="st-mini">${r.exact}</div>
+              <div class="st-mini">${r.outcome}</div>
+              <div class="st-total">${r.total}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <button class="back-btn" id="backFromStandings">← Fikstüre Dön</button>
+    </div>
+  `;
+  document.getElementById('backFromStandings').onclick = () => toggleStandings(false);
+}
+
+function toggleStandings(show){
+  standingsOpen = show;
+  document.getElementById('fixtureView').style.display = show ? 'none' : 'block';
+  document.getElementById('standingsView').style.display = show ? 'block' : 'none';
+  document.getElementById('weekStrip').style.display = show ? 'none' : 'flex';
+  renderPlayerBar();
+  if(show) renderStandings(true);
+}
+
 async function loadWeekScores(forceRefresh){
   if(!cachedData || forceRefresh){
     cachedData = await fetchAllData();
+  }
+  if(currentPlayer === ADMIN_NAME){
+    return (cachedData.__RESULTS__ && cachedData.__RESULTS__[currentWeek]) || {};
   }
   return (cachedData[currentPlayer] && cachedData[currentPlayer][currentWeek]) || {};
 }
@@ -351,10 +585,6 @@ async function renderFixtures(forceRefresh){
   wireCrestImages();
 }
 
-document.getElementById('weekToggle').addEventListener('click', () => {
-  document.getElementById('weekPanel').classList.toggle('open');
-});
-
 document.getElementById('refreshBtn').addEventListener('click', async () => {
   const btn = document.getElementById('refreshBtn');
   btn.disabled = true;
@@ -381,8 +611,13 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   });
   try{
     if(!cachedData) cachedData = await fetchAllData();
-    if(!cachedData[currentPlayer]) cachedData[currentPlayer] = {};
-    cachedData[currentPlayer][currentWeek] = weekData;
+    if(currentPlayer === ADMIN_NAME){
+      if(!cachedData.__RESULTS__) cachedData.__RESULTS__ = {};
+      cachedData.__RESULTS__[currentWeek] = weekData;
+    }else{
+      if(!cachedData[currentPlayer]) cachedData[currentPlayer] = {};
+      cachedData[currentPlayer][currentWeek] = weekData;
+    }
     await writeAllData(cachedData);
     const status = document.getElementById('saveStatus');
     status.classList.add('show');
@@ -390,6 +625,86 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   }catch(e){
     console.error("Kaydetme hatası:", e);
     alert('Kaydetme başarısız oldu: ' + e.message);
+  }
+  btn.disabled = false;
+});
+
+document.getElementById('finalizeBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('finalizeBtn');
+  btn.disabled = true;
+  try{
+    if(!cachedData) cachedData = await fetchAllData();
+    const results = (cachedData.__RESULTS__ && cachedData.__RESULTS__[currentWeek]) || {};
+    const matches = FIXTURES_BY_WEEK[currentWeek - 1];
+
+    if(!cachedData.__POINTS__) cachedData.__POINTS__ = {};
+    if(!cachedData.__STATS__) cachedData.__STATS__ = {};
+
+    PLAYERS.forEach(player => {
+      const prediction = (cachedData[player] && cachedData[player][currentWeek]) || {};
+      let total = 0;
+      let exactHits = 0;
+      let outcomeHits = 0;
+
+      matches.forEach((m, idx) => {
+        const actual = results[idx];
+        const pred = prediction[idx];
+        if(!actual || actual.home === null || actual.away === null) return; // gerçek skor girilmemiş
+        if(!pred || pred.home === null || pred.away === null) return; // tahmin girilmemiş -> 0
+
+        if(pred.home === actual.home && pred.away === actual.away){
+          total += 3; // isabetli skor
+          exactHits++;
+        }else{
+          const actualOutcome = actual.home === actual.away ? 'X' : (actual.home > actual.away ? '1' : '2');
+          const predOutcome = pred.home === pred.away ? 'X' : (pred.home > pred.away ? '1' : '2');
+          if(actualOutcome === predOutcome){
+            total += 1; // doğru taraf/beraberlik
+            outcomeHits++;
+          }
+        }
+      });
+
+      if(!cachedData.__POINTS__[player]) cachedData.__POINTS__[player] = {};
+      cachedData.__POINTS__[player][currentWeek] = total;
+
+      if(!cachedData.__STATS__[player]) cachedData.__STATS__[player] = {};
+      cachedData.__STATS__[player][currentWeek] = {
+        exact: exactHits,
+        outcome: outcomeHits,
+        played: Object.keys(prediction).length > 0
+      };
+    });
+
+    if(!cachedData.__FINALIZED__) cachedData.__FINALIZED__ = {};
+    cachedData.__FINALIZED__[currentWeek] = true;
+
+    await writeAllData(cachedData);
+    renderPointsSummary();
+    alert(`${currentWeek}. hafta sonuçlandırıldı ve puanlar dağıtıldı.`);
+  }catch(e){
+    console.error("Kesinleştirme hatası:", e);
+    alert('Kesinleştirme başarısız oldu: ' + e.message);
+  }
+  btn.disabled = false;
+});
+
+document.getElementById('resetBtn').addEventListener('click', async () => {
+  const sure1 = confirm('TÜM veriler silinecek: herkesin tüm hafta tahminleri, admin sonuçları ve puan durumu. Bu işlem geri alınamaz. Emin misin?');
+  if(!sure1) return;
+  const sure2 = confirm('Son kez soruyorum — gerçekten her şeyi sıfırlamak istiyor musun?');
+  if(!sure2) return;
+
+  const btn = document.getElementById('resetBtn');
+  btn.disabled = true;
+  try{
+    cachedData = {};
+    await writeAllData(cachedData);
+    alert('Tüm veriler sıfırlandı.');
+    renderFixtures(true);
+  }catch(e){
+    console.error("Sıfırlama hatası:", e);
+    alert('Sıfırlama başarısız oldu: ' + e.message);
   }
   btn.disabled = false;
 });
