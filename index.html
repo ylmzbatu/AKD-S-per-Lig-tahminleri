@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Süper Lig Tahmin — Ortak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#220e28;
+    --bg-2:#2b1230;
+    --line:rgba(255,255,255,0.09);
+    --text:#ffffff;
+    --text-dim:rgba(255,255,255,0.55);
+    --gold:#f0c341;
+    --green:#3fb27f;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top, var(--bg-2), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Poppins',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:620px;margin:0 auto;padding:28px 24px 90px;}
+
+  .player-bar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:26px;}
+  .player-btn{
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    color:var(--text-dim);
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--line);
+    border-radius:100px;
+    padding:8px 15px;
+    cursor:pointer;
+  }
+  .player-btn:hover{border-color:var(--gold);color:var(--text);}
+  .player-btn.active{background:var(--gold);border-color:var(--gold);color:var(--bg);}
+
+  .head{text-align:center;margin-bottom:20px;}
+  .head .eyebrow{
+    font-size:11px;font-weight:600;letter-spacing:.18em;
+    color:var(--gold);text-transform:uppercase;
+  }
+  .head h1{font-weight:800;font-size:30px;letter-spacing:.01em;margin:6px 0 14px;}
+
+  .week-btn{
+    display:block;margin:0 auto;
+    font-family:'Poppins',sans-serif;font-weight:600;font-size:13px;
+    color:var(--bg);background:var(--gold);border:none;border-radius:100px;
+    padding:10px 22px;cursor:pointer;
+  }
+  .week-btn:hover{opacity:.9;}
+
+  .week-panel{
+    display:none;margin:18px auto 0;max-width:560px;
+    background:rgba(255,255,255,0.04);border:1px solid var(--line);
+    border-radius:16px;padding:16px;
+  }
+  .week-panel.open{display:block;}
+  .week-grid{display:grid;grid-template-columns:repeat(7, 1fr);gap:7px;}
+  .week-grid button{
+    font-family:'Poppins',sans-serif;font-weight:600;font-size:12.5px;
+    color:var(--text);background:rgba(255,255,255,0.05);border:1px solid var(--line);
+    border-radius:8px;padding:9px 0;cursor:pointer;
+  }
+  .week-grid button:hover{border-color:var(--gold);color:var(--gold);}
+  .week-grid button.active{background:var(--gold);border-color:var(--gold);color:var(--bg);}
+  @media (max-width:480px){.week-grid{grid-template-columns:repeat(5, 1fr);}}
+
+  .match{
+    display:grid;grid-template-columns:1fr 40px 92px 40px 1fr;
+    align-items:center;gap:14px;padding:22px 4px;border-bottom:1px solid var(--line);
+  }
+  .match:last-child{border-bottom:none;}
+  .name{font-weight:600;font-size:15.5px;}
+  .name.home{text-align:right;}
+  .name.away{text-align:left;}
+
+  .crest{width:40px;height:40px;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:50%;overflow:hidden;}
+  .crest img{width:100%;height:100%;object-fit:contain;}
+  .crest .placeholder{
+    width:100%;height:100%;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:10px;color:#fff;
+  }
+
+  .score-box{display:flex;align-items:center;justify-content:center;gap:6px;}
+  .score-box input{
+    width:34px;height:38px;text-align:center;
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:16px;color:var(--text);
+    background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.18);
+    border-radius:8px;outline:none;-moz-appearance:textfield;
+  }
+  .score-box input::-webkit-outer-spin-button,
+  .score-box input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .score-box input:focus{border-color:var(--gold);background:rgba(240,195,65,0.1);}
+  .score-box span{color:var(--text-dim);font-weight:600;font-size:14px;}
+
+  .footer-bar{max-width:620px;margin:26px auto 0;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .save-btn{
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--bg);
+    background:var(--green);border:none;border-radius:100px;padding:12px 30px;cursor:pointer;
+  }
+  .save-btn:hover{opacity:.9;}
+  .save-btn:disabled{opacity:.5;cursor:default;}
+  .refresh-btn{
+    font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--text);
+    background:rgba(255,255,255,0.08);border:1px solid var(--line);border-radius:100px;
+    padding:12px 22px;cursor:pointer;
+  }
+  .refresh-btn:hover{border-color:var(--gold);color:var(--gold);}
+  .refresh-btn:disabled{opacity:.5;cursor:default;}
+  .save-status{font-size:12.5px;font-weight:600;color:var(--green);opacity:0;transition:opacity .2s ease;}
+  .save-status.show{opacity:1;}
+
+  .note{text-align:center;font-size:11.5px;color:var(--text-dim);margin-top:26px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="player-bar" id="playerBar"></div>
+
+  <div class="head">
+    <div class="eyebrow">Trendyol Süper Lig · 2026/2027</div>
+    <h1 id="weekTitle">1. Hafta</h1>
+    <button class="week-btn" id="weekToggle">Hafta Değiştir</button>
+    <div class="week-panel" id="weekPanel">
+      <div class="week-grid" id="weekGrid"></div>
+    </div>
+  </div>
+
+  <div id="fixtures"></div>
+
+  <div class="footer-bar">
+    <button class="save-btn" id="saveBtn">Skorları Kaydet</button>
+    <button class="refresh-btn" id="refreshBtn">Yenile ↻</button>
+    <span class="save-status" id="saveStatus">Kaydedildi ✓</span>
+  </div>
+
+  <div class="note">
+    Skorlar herkesle ortak, buluta kaydediliyor — arkadaşlarının yeni<br>
+    girdiklerini görmek için "Yenile" butonuna bas.
+  </div>
+
+</div>
+
+<script>
+// ---------- KULÜPLER (gerçek forma renkleri + aynı depodaki logolar) ----------
+const LOGO_BASE = ""; // index.html logolarla aynı klasörde olduğu için göreli yol yeterli
+const CLUBS = {
+  "Galatasaray":              {code:"GS",  c1:"#A32638", c2:"#F5B301", logo:"exgalatasaray.png"},
+  "Arca Çorum FK":            {code:"ÇOR", c1:"#B01E2C", c2:"#151515", logo:"corumfk.png"},
+  "Kasımpaşa":                {code:"KAS", c1:"#0F2A5C", c2:"#3a5a9c", logo:"kasimpasa.png"},
+  "Trabzonspor":              {code:"TS",  c1:"#7A1F3D", c2:"#122A55", logo:"ts.png"},
+  "Konyaspor":                {code:"KON", c1:"#0E7A3D", c2:"#3aa866", logo:"konyaspor2.png"},
+  "Çaykur Rizespor":          {code:"RİZ", c1:"#127A4E", c2:"#0B2A55", logo:"rize.png"},
+  "Gençlerbirliği":           {code:"GB",  c1:"#A6192E", c2:"#151515", logo:"genclerbirligi.png"},
+  "Fenerbahçe":               {code:"FB",  c1:"#132A6B", c2:"#F6C500", logo:"fenerbahce.png"},
+  "Gaziantep FK":             {code:"GFK", c1:"#A6192E", c2:"#151515", logo:"gaziantepfk.png"},
+  "Corendon Alanyaspor":      {code:"ALN", c1:"#E8720C", c2:"#127A4E", logo:"alanyaspor1.png"},
+  "İstanbul Başakşehir":      {code:"İBFK",c1:"#E8720C", c2:"#0F2A5C", logo:"istanbulbasaksehir.png"},
+  "Kocaelispor":              {code:"KCE", c1:"#127A4E", c2:"#151515", logo:"kocaelispor11.png"},
+  "Amed Sportif Faaliyetler": {code:"AMED",c1:"#C8102E", c2:"#127A4E", logo:null},
+  "Erzurumspor FK":           {code:"EZS", c1:"#0F3E8C", c2:"#3a6ac2", logo:"Erzurumsporfk.png"},
+  "Beşiktaş":                 {code:"BJK", c1:"#151515", c2:"#3a3a3a", logo:"exbesiktas51.png"},
+  "Eyüpspor":                 {code:"EYP", c1:"#5B2A86", c2:"#F6C500", logo:"eyupspor.png"},
+  "Samsunspor":               {code:"SAM", c1:"#C8102E", c2:"#151515", logo:"samsunspor.png"},
+  "Göztepe":                  {code:"GÖZ", c1:"#F2C230", c2:"#C8102E", logo:"goztepe1.png"},
+};
+
+// ---------- 34 HAFTALIK GERÇEK FİKSTÜR ----------
+const FIXTURES_BY_WEEK = [
+[["Galatasaray","Arca Çorum FK"],["Kasımpaşa","Trabzonspor"],["Konyaspor","Çaykur Rizespor"],["Gaziantep FK","Corendon Alanyaspor"],["Gençlerbirliği","Fenerbahçe"],["İstanbul Başakşehir","Kocaelispor"],["Amed Sportif Faaliyetler","Erzurumspor FK"],["Beşiktaş","Eyüpspor"],["Samsunspor","Göztepe"]],
+[["Erzurumspor FK","Galatasaray"],["Çaykur Rizespor","Samsunspor"],["Arca Çorum FK","Kasımpaşa"],["Fenerbahçe","Konyaspor"],["Trabzonspor","İstanbul Başakşehir"],["Eyüpspor","Gaziantep FK"],["Corendon Alanyaspor","Beşiktaş"],["Göztepe","Gençlerbirliği"],["Kocaelispor","Amed Sportif Faaliyetler"]],
+[["Gençlerbirliği","Erzurumspor FK"],["Konyaspor","Kocaelispor"],["Gaziantep FK","Çaykur Rizespor"],["Galatasaray","Göztepe"],["Eyüpspor","Corendon Alanyaspor"],["İstanbul Başakşehir","Kasımpaşa"],["Samsunspor","Fenerbahçe"],["Amed Sportif Faaliyetler","Trabzonspor"],["Beşiktaş","Arca Çorum FK"]],
+[["Trabzonspor","Gençlerbirliği"],["Kasımpaşa","Amed Sportif Faaliyetler"],["İstanbul Başakşehir","Galatasaray"],["Çaykur Rizespor","Corendon Alanyaspor"],["Göztepe","Gaziantep FK"],["Arca Çorum FK","Eyüpspor"],["Fenerbahçe","Beşiktaş"],["Kocaelispor","Samsunspor"],["Erzurumspor FK","Konyaspor"]],
+[["Gaziantep FK","Fenerbahçe"],["Eyüpspor","Çaykur Rizespor"],["Corendon Alanyaspor","Göztepe"],["Amed Sportif Faaliyetler","İstanbul Başakşehir"],["Gençlerbirliği","Kasımpaşa"],["Konyaspor","Trabzonspor"],["Galatasaray","Kocaelispor"],["Beşiktaş","Erzurumspor FK"],["Samsunspor","Arca Çorum FK"]],
+[["Trabzonspor","Galatasaray"],["Kasımpaşa","Konyaspor"],["İstanbul Başakşehir","Gençlerbirliği"],["Amed Sportif Faaliyetler","Beşiktaş"],["Göztepe","Çaykur Rizespor"],["Arca Çorum FK","Corendon Alanyaspor"],["Fenerbahçe","Eyüpspor"],["Kocaelispor","Gaziantep FK"],["Erzurumspor FK","Samsunspor"]],
+[["Gaziantep FK","Arca Çorum FK"],["Eyüpspor","Göztepe"],["Corendon Alanyaspor","Erzurumspor FK"],["Çaykur Rizespor","Fenerbahçe"],["Gençlerbirliği","Amed Sportif Faaliyetler"],["Konyaspor","İstanbul Başakşehir"],["Galatasaray","Kasımpaşa"],["Beşiktaş","Kocaelispor"],["Samsunspor","Trabzonspor"]],
+[["Trabzonspor","Beşiktaş"],["Kasımpaşa","Samsunspor"],["İstanbul Başakşehir","Gaziantep FK"],["Amed Sportif Faaliyetler","Konyaspor"],["Gençlerbirliği","Galatasaray"],["Arca Çorum FK","Çaykur Rizespor"],["Fenerbahçe","Corendon Alanyaspor"],["Kocaelispor","Göztepe"],["Erzurumspor FK","Eyüpspor"]],
+[["Gaziantep FK","Erzurumspor FK"],["Eyüpspor","Kasımpaşa"],["Corendon Alanyaspor","Kocaelispor"],["Çaykur Rizespor","Trabzonspor"],["Göztepe","Arca Çorum FK"],["Konyaspor","Gençlerbirliği"],["Galatasaray","Fenerbahçe"],["Beşiktaş","İstanbul Başakşehir"],["Samsunspor","Amed Sportif Faaliyetler"]],
+[["Trabzonspor","Gaziantep FK"],["Kasımpaşa","Beşiktaş"],["İstanbul Başakşehir","Samsunspor"],["Amed Sportif Faaliyetler","Eyüpspor"],["Gençlerbirliği","Corendon Alanyaspor"],["Konyaspor","Galatasaray"],["Fenerbahçe","Göztepe"],["Kocaelispor","Çaykur Rizespor"],["Erzurumspor FK","Arca Çorum FK"]],
+[["Gaziantep FK","Kasımpaşa"],["Eyüpspor","Kocaelispor"],["Corendon Alanyaspor","Trabzonspor"],["Çaykur Rizespor","Erzurumspor FK"],["Göztepe","İstanbul Başakşehir"],["Arca Çorum FK","Fenerbahçe"],["Galatasaray","Amed Sportif Faaliyetler"],["Beşiktaş","Gençlerbirliği"],["Samsunspor","Konyaspor"]],
+[["Trabzonspor","Eyüpspor"],["Kasımpaşa","Corendon Alanyaspor"],["İstanbul Başakşehir","Arca Çorum FK"],["Amed Sportif Faaliyetler","Çaykur Rizespor"],["Gençlerbirliği","Gaziantep FK"],["Konyaspor","Beşiktaş"],["Galatasaray","Samsunspor"],["Kocaelispor","Fenerbahçe"],["Erzurumspor FK","Göztepe"]],
+[["Gaziantep FK","Amed Sportif Faaliyetler"],["Eyüpspor","İstanbul Başakşehir"],["Corendon Alanyaspor","Konyaspor"],["Çaykur Rizespor","Kasımpaşa"],["Göztepe","Trabzonspor"],["Arca Çorum FK","Kocaelispor"],["Fenerbahçe","Erzurumspor FK"],["Beşiktaş","Galatasaray"],["Samsunspor","Gençlerbirliği"]],
+[["Trabzonspor","Arca Çorum FK"],["Kasımpaşa","Göztepe"],["İstanbul Başakşehir","Fenerbahçe"],["Amed Sportif Faaliyetler","Corendon Alanyaspor"],["Gençlerbirliği","Eyüpspor"],["Konyaspor","Gaziantep FK"],["Galatasaray","Çaykur Rizespor"],["Beşiktaş","Samsunspor"],["Erzurumspor FK","Kocaelispor"]],
+[["Gaziantep FK","Beşiktaş"],["Eyüpspor","Galatasaray"],["Corendon Alanyaspor","Samsunspor"],["Çaykur Rizespor","İstanbul Başakşehir"],["Göztepe","Konyaspor"],["Arca Çorum FK","Amed Sportif Faaliyetler"],["Fenerbahçe","Trabzonspor"],["Kocaelispor","Gençlerbirliği"],["Erzurumspor FK","Kasımpaşa"]],
+[["Trabzonspor","Kocaelispor"],["Kasımpaşa","Fenerbahçe"],["İstanbul Başakşehir","Erzurumspor FK"],["Amed Sportif Faaliyetler","Göztepe"],["Gençlerbirliği","Arca Çorum FK"],["Konyaspor","Eyüpspor"],["Galatasaray","Corendon Alanyaspor"],["Beşiktaş","Çaykur Rizespor"],["Samsunspor","Gaziantep FK"]],
+[["Gaziantep FK","Galatasaray"],["Eyüpspor","Samsunspor"],["Corendon Alanyaspor","İstanbul Başakşehir"],["Çaykur Rizespor","Gençlerbirliği"],["Göztepe","Beşiktaş"],["Arca Çorum FK","Konyaspor"],["Fenerbahçe","Amed Sportif Faaliyetler"],["Kocaelispor","Kasımpaşa"],["Erzurumspor FK","Trabzonspor"]],
+[["Corendon Alanyaspor","Gaziantep FK"],["Trabzonspor","Kasımpaşa"],["Kocaelispor","İstanbul Başakşehir"],["Erzurumspor FK","Amed Sportif Faaliyetler"],["Fenerbahçe","Gençlerbirliği"],["Çaykur Rizespor","Konyaspor"],["Arca Çorum FK","Galatasaray"],["Eyüpspor","Beşiktaş"],["Göztepe","Samsunspor"]],
+[["İstanbul Başakşehir","Trabzonspor"],["Gaziantep FK","Eyüpspor"],["Beşiktaş","Corendon Alanyaspor"],["Samsunspor","Çaykur Rizespor"],["Gençlerbirliği","Göztepe"],["Kasımpaşa","Arca Çorum FK"],["Konyaspor","Fenerbahçe"],["Amed Sportif Faaliyetler","Kocaelispor"],["Galatasaray","Erzurumspor FK"]],
+[["Çaykur Rizespor","Gaziantep FK"],["Corendon Alanyaspor","Eyüpspor"],["Kasımpaşa","İstanbul Başakşehir"],["Trabzonspor","Amed Sportif Faaliyetler"],["Erzurumspor FK","Gençlerbirliği"],["Kocaelispor","Konyaspor"],["Göztepe","Galatasaray"],["Arca Çorum FK","Beşiktaş"],["Fenerbahçe","Samsunspor"]],
+[["Gençlerbirliği","Trabzonspor"],["Amed Sportif Faaliyetler","Kasımpaşa"],["Galatasaray","İstanbul Başakşehir"],["Corendon Alanyaspor","Çaykur Rizespor"],["Gaziantep FK","Göztepe"],["Eyüpspor","Arca Çorum FK"],["Beşiktaş","Fenerbahçe"],["Samsunspor","Kocaelispor"],["Konyaspor","Erzurumspor FK"]],
+[["Fenerbahçe","Gaziantep FK"],["Çaykur Rizespor","Eyüpspor"],["Göztepe","Corendon Alanyaspor"],["İstanbul Başakşehir","Amed Sportif Faaliyetler"],["Kasımpaşa","Gençlerbirliği"],["Trabzonspor","Konyaspor"],["Kocaelispor","Galatasaray"],["Erzurumspor FK","Beşiktaş"],["Arca Çorum FK","Samsunspor"]],
+[["Galatasaray","Trabzonspor"],["Konyaspor","Kasımpaşa"],["Gençlerbirliği","İstanbul Başakşehir"],["Beşiktaş","Amed Sportif Faaliyetler"],["Çaykur Rizespor","Göztepe"],["Corendon Alanyaspor","Arca Çorum FK"],["Eyüpspor","Fenerbahçe"],["Gaziantep FK","Kocaelispor"],["Samsunspor","Erzurumspor FK"]],
+[["Arca Çorum FK","Gaziantep FK"],["Göztepe","Eyüpspor"],["Erzurumspor FK","Corendon Alanyaspor"],["Fenerbahçe","Çaykur Rizespor"],["Amed Sportif Faaliyetler","Gençlerbirliği"],["İstanbul Başakşehir","Konyaspor"],["Kasımpaşa","Galatasaray"],["Kocaelispor","Beşiktaş"],["Trabzonspor","Samsunspor"]],
+[["Beşiktaş","Trabzonspor"],["Samsunspor","Kasımpaşa"],["Gaziantep FK","İstanbul Başakşehir"],["Konyaspor","Amed Sportif Faaliyetler"],["Galatasaray","Gençlerbirliği"],["Çaykur Rizespor","Arca Çorum FK"],["Corendon Alanyaspor","Fenerbahçe"],["Göztepe","Kocaelispor"],["Eyüpspor","Erzurumspor FK"]],
+[["Erzurumspor FK","Gaziantep FK"],["Kasımpaşa","Eyüpspor"],["Kocaelispor","Corendon Alanyaspor"],["Trabzonspor","Çaykur Rizespor"],["Arca Çorum FK","Göztepe"],["Gençlerbirliği","Konyaspor"],["Fenerbahçe","Galatasaray"],["İstanbul Başakşehir","Beşiktaş"],["Amed Sportif Faaliyetler","Samsunspor"]],
+[["Gaziantep FK","Trabzonspor"],["Beşiktaş","Kasımpaşa"],["Samsunspor","İstanbul Başakşehir"],["Eyüpspor","Amed Sportif Faaliyetler"],["Corendon Alanyaspor","Gençlerbirliği"],["Galatasaray","Konyaspor"],["Göztepe","Fenerbahçe"],["Çaykur Rizespor","Kocaelispor"],["Arca Çorum FK","Erzurumspor FK"]],
+[["Kasımpaşa","Gaziantep FK"],["Kocaelispor","Eyüpspor"],["Trabzonspor","Corendon Alanyaspor"],["Erzurumspor FK","Çaykur Rizespor"],["İstanbul Başakşehir","Göztepe"],["Fenerbahçe","Arca Çorum FK"],["Amed Sportif Faaliyetler","Galatasaray"],["Gençlerbirliği","Beşiktaş"],["Konyaspor","Samsunspor"]],
+[["Eyüpspor","Trabzonspor"],["Corendon Alanyaspor","Kasımpaşa"],["Arca Çorum FK","İstanbul Başakşehir"],["Çaykur Rizespor","Amed Sportif Faaliyetler"],["Gaziantep FK","Gençlerbirliği"],["Beşiktaş","Konyaspor"],["Samsunspor","Galatasaray"],["Fenerbahçe","Kocaelispor"],["Göztepe","Erzurumspor FK"]],
+[["Amed Sportif Faaliyetler","Gaziantep FK"],["İstanbul Başakşehir","Eyüpspor"],["Konyaspor","Corendon Alanyaspor"],["Kasımpaşa","Çaykur Rizespor"],["Trabzonspor","Göztepe"],["Kocaelispor","Arca Çorum FK"],["Erzurumspor FK","Fenerbahçe"],["Galatasaray","Beşiktaş"],["Gençlerbirliği","Samsunspor"]],
+[["Arca Çorum FK","Trabzonspor"],["Göztepe","Kasımpaşa"],["Fenerbahçe","İstanbul Başakşehir"],["Corendon Alanyaspor","Amed Sportif Faaliyetler"],["Eyüpspor","Gençlerbirliği"],["Gaziantep FK","Konyaspor"],["Çaykur Rizespor","Galatasaray"],["Samsunspor","Beşiktaş"],["Kocaelispor","Erzurumspor FK"]],
+[["Beşiktaş","Gaziantep FK"],["Galatasaray","Eyüpspor"],["Samsunspor","Corendon Alanyaspor"],["İstanbul Başakşehir","Çaykur Rizespor"],["Konyaspor","Göztepe"],["Amed Sportif Faaliyetler","Arca Çorum FK"],["Trabzonspor","Fenerbahçe"],["Gençlerbirliği","Kocaelispor"],["Kasımpaşa","Erzurumspor FK"]],
+[["Kocaelispor","Trabzonspor"],["Fenerbahçe","Kasımpaşa"],["Erzurumspor FK","İstanbul Başakşehir"],["Göztepe","Amed Sportif Faaliyetler"],["Arca Çorum FK","Gençlerbirliği"],["Eyüpspor","Konyaspor"],["Corendon Alanyaspor","Galatasaray"],["Çaykur Rizespor","Beşiktaş"],["Gaziantep FK","Samsunspor"]],
+[["Galatasaray","Gaziantep FK"],["Samsunspor","Eyüpspor"],["İstanbul Başakşehir","Corendon Alanyaspor"],["Gençlerbirliği","Çaykur Rizespor"],["Beşiktaş","Göztepe"],["Konyaspor","Arca Çorum FK"],["Amed Sportif Faaliyetler","Fenerbahçe"],["Kasımpaşa","Kocaelispor"],["Trabzonspor","Erzurumspor FK"]],
+];
+
+// ---------- OYUNCULAR ----------
+const PLAYERS = ["Batuhan", "Ahmet", "Rıdvan", "Emre", "Samet"];
+
+let currentPlayer = PLAYERS[0];
+let currentWeek = 1;
+let cachedData = null; // en son çekilen ortak veri (manuel yenile ile güncellenir)
+
+function crestHTML(teamName){
+  const c = CLUBS[teamName];
+  if(c.logo){
+    return `<div class="crest"><img data-team="${teamName}" alt="${teamName}"></div>`;
+  }
+  return `<div class="crest"><div class="placeholder" style="background:linear-gradient(135deg, ${c.c1}, ${c.c2});">${c.code}</div></div>`;
+}
+
+function wireCrestImages(){
+  document.querySelectorAll('.crest img[data-team]').forEach(img => {
+    const teamName = img.getAttribute('data-team');
+    const c = CLUBS[teamName];
+    img.onerror = () => {
+      img.parentElement.innerHTML = `<div class="placeholder" style="background:linear-gradient(135deg, ${c.c1}, ${c.c2});">${c.code}</div>`;
+    };
+    img.src = LOGO_BASE + c.logo;
+  });
+}
+
+function renderPlayerBar(){
+  const bar = document.getElementById('playerBar');
+  bar.innerHTML = '';
+  PLAYERS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'player-btn' + (p === currentPlayer ? ' active' : '');
+    btn.textContent = p;
+    btn.onclick = () => { currentPlayer = p; renderFixtures(); renderPlayerBar(); };
+    bar.appendChild(btn);
+  });
+}
+
+function renderWeekGrid(){
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  for(let w=1; w<=34; w++){
+    const btn = document.createElement('button');
+    btn.textContent = w;
+    if(w === currentWeek) btn.classList.add('active');
+    btn.onclick = () => {
+      currentWeek = w;
+      document.getElementById('weekPanel').classList.remove('open');
+      renderFixtures();
+    };
+    grid.appendChild(btn);
+  }
+}
+
+// ---------- ORTAK VERİ (jsonbin.io) ----------
+const JSONBIN_ID = "6a7ef481f5f4af5e29158cbf";
+const JSONBIN_KEY = "$2a$10$EmfKflllq7lICCJDZSzhZumQbulwUTQyKntx.ty/2QU64x1bxkiOK";
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+
+async function fetchAllData(){
+  try{
+    const res = await fetch(`${JSONBIN_URL}/latest`, {
+      headers: { "X-Master-Key": JSONBIN_KEY }
+    });
+    const json = await res.json();
+    return json.record || {};
+  }catch(e){
+    console.error("Veri okunamadı:", e);
+    return {};
+  }
+}
+
+async function writeAllData(data){
+  await fetch(JSONBIN_URL, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Master-Key": JSONBIN_KEY
+    },
+    body: JSON.stringify(data)
+  });
+}
+
+async function loadWeekScores(forceRefresh){
+  if(!cachedData || forceRefresh){
+    cachedData = await fetchAllData();
+  }
+  return (cachedData[currentPlayer] && cachedData[currentPlayer][currentWeek]) || {};
+}
+
+async function renderFixtures(forceRefresh){
+  const root = document.getElementById('fixtures');
+  const matches = FIXTURES_BY_WEEK[currentWeek - 1];
+  document.getElementById('weekTitle').textContent = currentWeek + '. Hafta';
+  renderWeekGrid();
+
+  if(forceRefresh || !cachedData){
+    root.innerHTML = matches.map(() => `<div class="match" style="opacity:.3">yükleniyor…</div>`).join('');
+  }
+
+  const saved = await loadWeekScores(forceRefresh);
+
+  root.innerHTML = matches.map((m, idx) => {
+    const [home, away] = m;
+    const s = saved[idx] || {};
+    return `
+      <div class="match">
+        <div class="name home">${home}</div>
+        ${crestHTML(home)}
+        <div class="score-box">
+          <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="home" value="${s.home ?? ''}">
+          <span>:</span>
+          <input type="number" min="0" max="20" inputmode="numeric" data-idx="${idx}" data-side="away" value="${s.away ?? ''}">
+        </div>
+        ${crestHTML(away)}
+        <div class="name away">${away}</div>
+      </div>
+    `;
+  }).join('');
+
+  wireCrestImages();
+}
+
+document.getElementById('weekToggle').addEventListener('click', () => {
+  document.getElementById('weekPanel').classList.toggle('open');
+});
+
+document.getElementById('refreshBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  await renderFixtures(true);
+  btn.disabled = false;
+});
+
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  const weekData = {};
+  document.querySelectorAll('#fixtures .match').forEach((row, idx) => {
+    const homeInput = row.querySelector('input[data-side="home"]');
+    const awayInput = row.querySelector('input[data-side="away"]');
+    if(!homeInput || !awayInput) return;
+    const homeVal = homeInput.value;
+    const awayVal = awayInput.value;
+    if(homeVal !== '' || awayVal !== ''){
+      weekData[idx] = {
+        home: homeVal === '' ? null : parseInt(homeVal),
+        away: awayVal === '' ? null : parseInt(awayVal),
+      };
+    }
+  });
+  try{
+    if(!cachedData) cachedData = await fetchAllData();
+    if(!cachedData[currentPlayer]) cachedData[currentPlayer] = {};
+    cachedData[currentPlayer][currentWeek] = weekData;
+    await writeAllData(cachedData);
+    const status = document.getElementById('saveStatus');
+    status.classList.add('show');
+    setTimeout(() => status.classList.remove('show'), 1800);
+  }catch(e){
+    alert('Kaydetme başarısız oldu, tekrar dene.');
+  }
+  btn.disabled = false;
+});
+
+renderPlayerBar();
+renderFixtures();
+</script>
+</body>
+</html>
