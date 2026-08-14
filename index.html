@@ -680,8 +680,7 @@ document.getElementById('finalizeBtn').addEventListener('click', async () => {
     cachedData.__FINALIZED__[currentWeek] = true;
 
     await writeAllData(cachedData);
-    renderPointsSummary();
-    alert(`${currentWeek}. hafta sonuçlandırıldı ve puanlar dağıtıldı.`);
+    alert(`${currentWeek}. hafta sonuçlandırıldı ve puanlar dağıtıldı. Puan Durumu sekmesinden görebilirsin.`);
   }catch(e){
     console.error("Kesinleştirme hatası:", e);
     alert('Kesinleştirme başarısız oldu: ' + e.message);
