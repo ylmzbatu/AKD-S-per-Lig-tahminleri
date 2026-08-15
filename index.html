@@ -414,7 +414,7 @@ const FIXTURES_BY_WEEK = [
 ];
 
 // ---------- OYUNCULAR ----------
-const PLAYERS = ["Batuhan", "Furkan", "Ahmet", "Rıdvan", "Emre", "Samet"];
+const PLAYERS = ["Batuhan", "Bora", "Furkan", "Ahmet", "Rıdvan", "Emre", "Samet"];
 const ADMIN_NAME = "Admin";
 
 let currentPlayer = PLAYERS[0];
@@ -447,6 +447,7 @@ function renderPlayerBar(){
   bar.innerHTML = '';
   const PLAYER_TEAM_CLASS = {
     "Batuhan": "p-gs",
+    "Bora": "p-gs",
     "Furkan": "p-bjk",
     "Ahmet": "p-bjk",
     "Samet": "p-bjk",
@@ -547,6 +548,7 @@ async function writeAllData(data){
 // ---------- PUAN DURUMU ----------
 const PLAYER_DOT_COLORS = {
   "Batuhan": ["#A32638", "#F2A93B"],
+  "Bora":    ["#A32638", "#F2A93B"],
   "Furkan":  ["#0a0a0a", "#ffffff"],
   "Ahmet":   ["#0a0a0a", "#ffffff"],
   "Samet":   ["#0a0a0a", "#ffffff"],
