@@ -146,27 +146,31 @@
   .st-total{text-align:center;font-weight:800;font-size:16px;color:var(--gold);}
   .st-row.top1{background:rgba(240,195,65,0.08);}
 
-  .st-row2{
-    display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:10px;
-    padding:14px 16px;border-bottom:1px solid var(--line);
+  .st-row3{
+    display:grid;
+    grid-template-columns:26px 1fr 30px 34px 34px 34px 44px;
+    align-items:center;gap:6px;
+    padding:12px 10px;border-bottom:1px solid var(--line);
   }
-  .st-row2:last-child{border-bottom:none;}
-  .st-row2.top1{background:rgba(240,195,65,0.08);}
-  .st-row2 .st-rank{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--text-dim);text-align:center;}
-  .st-row2.top1 .st-rank{font-size:18px;}
-  .st-row2.top2 .st-rank, .st-row2.top3 .st-rank{font-size:16px;}
-  .st-main{min-width:0;}
-  .st-main .st-name{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;margin-bottom:4px;}
-  .st-breakdown{
-    font-size:11px;color:var(--text-dim);white-space:nowrap;overflow-x:auto;
-    display:flex;align-items:center;gap:5px;
+  .st-row3:last-child{border-bottom:none;}
+  .st-row3.st-head{
+    font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--text-dim);padding:9px 10px;background:rgba(255,255,255,0.03);
   }
-  .st-breakdown::-webkit-scrollbar{display:none;}
-  .st-breakdown .dot-sep{opacity:.5;}
-  .st-breakdown .stat-exact{color:#3fb27f;font-weight:600;}
-  .st-breakdown .stat-outcome{color:#f0932b;font-weight:600;}
-  .st-breakdown .stat-wrong{color:#e0554f;font-weight:600;}
-  .st-row2 .st-total{font-family:'Poppins',sans-serif;font-weight:800;font-size:20px;color:var(--gold);text-align:right;}
+  .st-row3.top1{background:rgba(240,195,65,0.08);}
+  .st-row3 .st-rank{font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;color:var(--text-dim);text-align:center;}
+  .st-row3.top1 .st-rank{font-size:16px;}
+  .st-row3.top2 .st-rank, .st-row3.top3 .st-rank{font-size:14px;}
+  .st-row3 .st-name{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .st-row3 .st-mini{text-align:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;color:var(--text-dim);}
+  .st-row3 .st-mini.stat-exact{color:#3fb27f;}
+  .st-row3 .st-mini.stat-outcome{color:#f0932b;}
+  .st-row3 .st-mini.stat-wrong{color:#e0554f;}
+  .st-row3 .st-total{font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:var(--gold);text-align:center;}
+  @media (max-width:400px){
+    .st-row3{grid-template-columns:22px 1fr 26px 30px 30px 30px 38px;font-size:12px;}
+    .st-row3 .st-name{font-size:12.5px;}
+  }
   .standings-empty{
     text-align:center;color:var(--text-dim);font-size:13px;
     padding:40px 20px;line-height:1.7;
@@ -619,26 +623,28 @@ async function renderStandings(forceRefresh){
     <div class="standings-wrap">
       <div class="standings-sub">${finalizedWeeks.length} hafta sonuçlandı — toplam puana göre sıralı</div>
       <div class="standings-table">
+        <div class="st-row3 st-head">
+          <div></div>
+          <div>Oyuncu</div>
+          <div>O</div>
+          <div>Tam</div>
+          <div>Trf</div>
+          <div>Bil</div>
+          <div>Puan</div>
+        </div>
         ${rows.map((r, i) => {
           const [c1, c2] = PLAYER_DOT_COLORS[r.p] || ["#888","#888"];
           return `
-            <div class="st-row2 ${rankClass[i] || ''}">
+            <div class="st-row3 ${rankClass[i] || ''}">
               <div class="st-rank">${medals[i] || (i+1)}</div>
-              <div class="st-main">
-                <div class="st-name">
-                  <div class="st-dot" style="background:linear-gradient(135deg, ${c1} 50%, ${c2} 50%);"></div>
-                  ${r.p}
-                </div>
-                <div class="st-breakdown">
-                  <span>${r.predicted} tahmin</span>
-                  <span class="dot-sep">·</span>
-                  <span class="stat-exact">${r.exact} tam</span>
-                  <span class="dot-sep">·</span>
-                  <span class="stat-outcome">${r.outcome} taraf</span>
-                  <span class="dot-sep">·</span>
-                  <span class="stat-wrong">${r.wrong} bilemedi</span>
-                </div>
+              <div class="st-name">
+                <div class="st-dot" style="background:linear-gradient(135deg, ${c1} 50%, ${c2} 50%);"></div>
+                ${r.p}
               </div>
+              <div class="st-mini">${r.predicted}</div>
+              <div class="st-mini stat-exact">${r.exact}</div>
+              <div class="st-mini stat-outcome">${r.outcome}</div>
+              <div class="st-mini stat-wrong">${r.wrong}</div>
               <div class="st-total">${r.total}</div>
             </div>
           `;
