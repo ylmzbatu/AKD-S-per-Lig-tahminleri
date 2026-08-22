@@ -603,6 +603,10 @@ async function renderStandings(forceRefresh){
     return;
   }
 
+  const totalResolved = finalizedWeeks.reduce((sum, w) => {
+    return sum + (cachedData.__WEEK_RESOLVED__?.[w] ?? FIXTURES_BY_WEEK[w-1].length);
+  }, 0);
+
   const rows = PLAYERS.map(p => {
     let total = 0, exact = 0, outcome = 0, wrong = 0, weeksPlayed = 0;
     finalizedWeeks.forEach(w => {
@@ -612,8 +616,7 @@ async function renderStandings(forceRefresh){
       wrong += (cachedData.__STATS__?.[p]?.[w]?.wrong) || 0;
       if(cachedData.__STATS__?.[p]?.[w]?.played) weeksPlayed++;
     });
-    const predicted = exact + outcome + wrong;
-    return {p, total, exact, outcome, wrong, predicted, weeksPlayed};
+    return {p, total, exact, outcome, wrong, weeksPlayed};
   }).sort((a,b) => b.total - a.total || b.exact - a.exact);
 
   const medals = ['🥇','🥈','🥉'];
@@ -641,7 +644,7 @@ async function renderStandings(forceRefresh){
                 <div class="st-dot" style="background:linear-gradient(135deg, ${c1} 50%, ${c2} 50%);"></div>
                 ${r.p}
               </div>
-              <div class="st-mini">${r.predicted}</div>
+              <div class="st-mini">${totalResolved}</div>
               <div class="st-mini stat-exact">${r.exact}</div>
               <div class="st-mini stat-outcome">${r.outcome}</div>
               <div class="st-mini stat-wrong">${r.wrong}</div>
@@ -961,6 +964,13 @@ document.getElementById('finalizeBtn').addEventListener('click', async () => {
 
     if(!cachedData.__POINTS__) cachedData.__POINTS__ = {};
     if(!cachedData.__STATS__) cachedData.__STATS__ = {};
+    if(!cachedData.__WEEK_RESOLVED__) cachedData.__WEEK_RESOLVED__ = {};
+
+    const resolvedCount = matches.filter((m, idx) => {
+      const actual = results[idx];
+      return actual && actual.home !== null && actual.away !== null && actual.home !== undefined;
+    }).length;
+    cachedData.__WEEK_RESOLVED__[currentWeek] = resolvedCount;
 
     PLAYERS.forEach(player => {
       const prediction = (cachedData[player] && cachedData[player][currentWeek]) || {};
