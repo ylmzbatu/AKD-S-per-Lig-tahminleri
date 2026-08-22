@@ -145,6 +145,28 @@
   .st-mini{text-align:center;font-size:13px;color:var(--text-dim);font-family:'Poppins',sans-serif;}
   .st-total{text-align:center;font-weight:800;font-size:16px;color:var(--gold);}
   .st-row.top1{background:rgba(240,195,65,0.08);}
+
+  .st-row2{
+    display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:10px;
+    padding:14px 16px;border-bottom:1px solid var(--line);
+  }
+  .st-row2:last-child{border-bottom:none;}
+  .st-row2.top1{background:rgba(240,195,65,0.08);}
+  .st-row2 .st-rank{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--text-dim);text-align:center;}
+  .st-row2.top1 .st-rank{font-size:18px;}
+  .st-row2.top2 .st-rank, .st-row2.top3 .st-rank{font-size:16px;}
+  .st-main{min-width:0;}
+  .st-main .st-name{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;margin-bottom:4px;}
+  .st-breakdown{
+    font-size:11px;color:var(--text-dim);white-space:nowrap;overflow-x:auto;
+    display:flex;align-items:center;gap:5px;
+  }
+  .st-breakdown::-webkit-scrollbar{display:none;}
+  .st-breakdown .dot-sep{opacity:.5;}
+  .st-breakdown .stat-exact{color:#3fb27f;font-weight:600;}
+  .st-breakdown .stat-outcome{color:#f0932b;font-weight:600;}
+  .st-breakdown .stat-wrong{color:#e0554f;font-weight:600;}
+  .st-row2 .st-total{font-family:'Poppins',sans-serif;font-weight:800;font-size:20px;color:var(--gold);text-align:right;}
   .standings-empty{
     text-align:center;color:var(--text-dim);font-size:13px;
     padding:40px 20px;line-height:1.7;
@@ -578,14 +600,16 @@ async function renderStandings(forceRefresh){
   }
 
   const rows = PLAYERS.map(p => {
-    let total = 0, exact = 0, outcome = 0, weeksPlayed = 0;
+    let total = 0, exact = 0, outcome = 0, wrong = 0, weeksPlayed = 0;
     finalizedWeeks.forEach(w => {
       total += (cachedData.__POINTS__?.[p]?.[w]) || 0;
       exact += (cachedData.__STATS__?.[p]?.[w]?.exact) || 0;
       outcome += (cachedData.__STATS__?.[p]?.[w]?.outcome) || 0;
+      wrong += (cachedData.__STATS__?.[p]?.[w]?.wrong) || 0;
       if(cachedData.__STATS__?.[p]?.[w]?.played) weeksPlayed++;
     });
-    return {p, total, exact, outcome, weeksPlayed};
+    const predicted = exact + outcome + wrong;
+    return {p, total, exact, outcome, wrong, predicted, weeksPlayed};
   }).sort((a,b) => b.total - a.total || b.exact - a.exact);
 
   const medals = ['🥇','🥈','🥉'];
@@ -595,24 +619,26 @@ async function renderStandings(forceRefresh){
     <div class="standings-wrap">
       <div class="standings-sub">${finalizedWeeks.length} hafta sonuçlandı — toplam puana göre sıralı</div>
       <div class="standings-table">
-        <div class="st-row st-head">
-          <div></div>
-          <div>Oyuncu</div>
-          <div>Tam</div>
-          <div>Sonuç</div>
-          <div>Puan</div>
-        </div>
         ${rows.map((r, i) => {
           const [c1, c2] = PLAYER_DOT_COLORS[r.p] || ["#888","#888"];
           return `
-            <div class="st-row ${rankClass[i] || ''}">
+            <div class="st-row2 ${rankClass[i] || ''}">
               <div class="st-rank">${medals[i] || (i+1)}</div>
-              <div class="st-name">
-                <div class="st-dot" style="background:linear-gradient(135deg, ${c1} 50%, ${c2} 50%);"></div>
-                ${r.p}
+              <div class="st-main">
+                <div class="st-name">
+                  <div class="st-dot" style="background:linear-gradient(135deg, ${c1} 50%, ${c2} 50%);"></div>
+                  ${r.p}
+                </div>
+                <div class="st-breakdown">
+                  <span>${r.predicted} tahmin</span>
+                  <span class="dot-sep">·</span>
+                  <span class="stat-exact">${r.exact} tam</span>
+                  <span class="dot-sep">·</span>
+                  <span class="stat-outcome">${r.outcome} taraf</span>
+                  <span class="dot-sep">·</span>
+                  <span class="stat-wrong">${r.wrong} bilemedi</span>
+                </div>
               </div>
-              <div class="st-mini">${r.exact}</div>
-              <div class="st-mini">${r.outcome}</div>
               <div class="st-total">${r.total}</div>
             </div>
           `;
@@ -935,12 +961,13 @@ document.getElementById('finalizeBtn').addEventListener('click', async () => {
       let total = 0;
       let exactHits = 0;
       let outcomeHits = 0;
+      let wrongHits = 0;
 
       matches.forEach((m, idx) => {
         const actual = results[idx];
         const pred = prediction[idx];
         if(!actual || actual.home === null || actual.away === null) return; // gerçek skor girilmemiş
-        if(!pred || pred.home === null || pred.away === null) return; // tahmin girilmemiş -> 0
+        if(!pred || pred.home === null || pred.away === null) return; // tahmin girilmemiş -> sayılmaz
 
         if(pred.home === actual.home && pred.away === actual.away){
           total += 3; // isabetli skor
@@ -951,6 +978,8 @@ document.getElementById('finalizeBtn').addEventListener('click', async () => {
           if(actualOutcome === predOutcome){
             total += 1; // doğru taraf/beraberlik
             outcomeHits++;
+          }else{
+            wrongHits++; // ne skor ne taraf tuttu
           }
         }
       });
@@ -962,6 +991,7 @@ document.getElementById('finalizeBtn').addEventListener('click', async () => {
       cachedData.__STATS__[player][currentWeek] = {
         exact: exactHits,
         outcome: outcomeHits,
+        wrong: wrongHits,
         played: Object.keys(prediction).length > 0
       };
     });
